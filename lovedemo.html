@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Click to Love — Demo</title>
+  <style>
+    :root{
+      --bg:#0f1724; /* dark */
+      --code:#0b1220;
+      --accent:#ff4d6d; /* heart color */
+      --text:#e6eef8;
+      --muted:#9fb0c8;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(180deg,var(--bg) 0%, #071226 100%);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color:var(--text);
+      padding:2rem;
+    }
+
+    .wrap{
+      width:900px;
+      max-width:95vw;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      padding:24px;
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap:20px;
+    }
+
+    .panel{
+      background:var(--code);
+      border-radius:8px;
+      padding:16px;
+      overflow:hidden;
+    }
+
+    h1{font-size:18px;margin:0 0 8px 0}
+    p{margin:0 0 12px 0;color:var(--muted)}
+
+    /* fake code area */
+    .code-area{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      border-radius:8px;
+      padding:12px 14px;
+      font-family: 'Courier New', monospace;
+      font-size:15px;
+      line-height:1.8;
+      color:#bfe0ff;
+      position:relative;
+      min-height:260px;
+    }
+
+    .line{
+      display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;padding:4px 6px;border-radius:6px;transition:background .12s, transform .12s;
+    }
+    .line:hover{background:rgba(255,255,255,0.02);transform:translateY(-2px)}
+    .ln{
+      width:34px;text-align:right;color:var(--muted);font-size:13px;padding-right:8px;
+    }
+    .code-text{flex:1}
+
+    .hint{font-size:13px;color:var(--muted);margin-top:8px}
+
+    /* sidebar */
+    .sidebar{
+      padding:12px;display:flex;flex-direction:column;gap:12px;
+    }
+    .preview{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:8px;padding:12px;min-height:160px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden
+    }
+    .preview .message{font-weight:700;font-size:26px;opacity:0;transform:translateY(10px);transition:all .35s ease}
+    .preview.show .message{opacity:1;transform:translateY(0)}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    button{background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:var(--text);padding:8px 10px;border-radius:8px;cursor:pointer}
+
+    /* heart effect */
+    .heart{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.2);opacity:0;pointer-events:none;
+      font-size:64px;text-shadow:0 8px 30px rgba(0,0,0,0.6);
+    }
+    .heart.pop{
+      animation:pop .9s cubic-bezier(.17,.89,.32,1.28) forwards;
+    }
+    @keyframes pop{
+      0%{transform:translate(-50%,-50%) scale(0.2);opacity:0}
+      40%{transform:translate(-50%,-70%) scale(1.05);opacity:1}
+      100%{transform:translate(-50%,-160%) scale(0.5);opacity:0}
+    }
+
+    /* floating tiny hearts */
+    .particle{
+      position:absolute;font-size:18px;opacity:0;transform:translateY(0);
+      animation:floatUp 1200ms ease-out forwards;
+    }
+    @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-140px) scale(.6)}}
+
+    /* responsive */
+    @media (max-width:880px){
+      .wrap{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>Click-to-Love — Mẫu code</h1>
+      <p>Nhấn vào một dòng bên dưới để xem trái tim / chữ "I LOVE YOU" xuất hiện. Học cách này xong là em có thể biến nó thành mạng xã hội nhỏ, chatbot, hay canvas animation.</p>
+
+      <div class="code-area" id="codeArea">
+        <!-- lines of "code" that are clickable -->
+        <div class="line" data-type="heart" data-text=""> 
+          <div class="ln">1</div>
+          <div class="code-text">// nhấn để gửi một trái tim 💖</div>
+        </div>
+        <div class="line" data-type="text" data-text="I LOVE YOU"> 
+          <div class="ln">2</div>
+          <div class="code-text">console.log('I LOVE YOU');</div>
+        </div>
+        <div class="line" data-type="heart" data-text=""> 
+          <div class="ln">3</div>
+          <div class="code-text">&lt;3 // gửi yêu thương</div>
+        </div>
+        <div class="line" data-type="text" data-text="You are awesome!"> 
+          <div class="ln">4</div>
+          <div class="code-text">alert('You are awesome!');</div>
+        </div>
+        <div class="line" data-type="heart" data-text=""> 
+          <div class="ln">5</div>
+          <div class="code-text">// click me</div>
+        </div>
+
+        <div class="hint">Tip: mở console (F12) để xem sự kiện được log. Tùy chỉnh text bằng thuộc tính data-text.</div>
+      </div>
+    </div>
+
+    <div class="panel sidebar">
+      <div>
+        <h1>Preview</h1>
+        <p class="hint">Khu xem thử: trái tim sẽ bay lên khi nhấn.</p>
+      </div>
+
+      <div class="preview" id="preview">
+        <div class="message">Click một dòng code đi nào 💌</div>
+        <div class="heart" id="bigHeart">❤️</div>
+      </div>
+
+      <div class="controls">
+        <button id="btnClear">Xóa hiệu ứng</button>
+        <button id="btnRandom">Tạo trái tim ngẫu nhiên</button>
+      </div>
+
+      <div style="font-size:13px;color:var(--muted);margin-top:8px">Muốn chuyển thành GIF / video hoặc chèn vào website? Nói anh biết, anh giúp em làm tiếp.</div>
+    </div>
+  </div>
+
+  <script>
+    const lines = document.querySelectorAll('.line');
+    const preview = document.getElementById('preview');
+    const bigHeart = document.getElementById('bigHeart');
+    const btnClear = document.getElementById('btnClear');
+    const btnRandom = document.getElementById('btnRandom');
+
+    function spawnParticle(x,y){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      // random heart or star
+      const symbols = ['💖','❤️','💕','❣️','🌟'];
+      p.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),1500);
+    }
+
+    function showBigHeart(){
+      bigHeart.classList.remove('pop');
+      // trigger reflow to restart animation
+      void bigHeart.offsetWidth;
+      bigHeart.classList.add('pop');
+    }
+
+    function showMessage(text){
+      const msgEl = preview.querySelector('.message');
+      msgEl.textContent = text;
+      preview.classList.add('show');
+      // hide after 2s
+      clearTimeout(preview.hideTimeout);
+      preview.hideTimeout = setTimeout(()=>preview.classList.remove('show'),2000);
+    }
+
+    lines.forEach(line =>{
+      line.addEventListener('click', e=>{
+        const type = line.dataset.type;
+        const text = line.dataset.text || '';
+
+        // log to console for demonstration
+        console.log('clicked line:', line.querySelector('.code-text').textContent.trim());
+
+        if(type === 'heart'){
+          // show big heart and particles
+          showBigHeart();
+          // spawn a few particles near the click position
+          const rect = line.getBoundingClientRect();
+          for(let i=0;i<8;i++){
+            const rx = rect.left + Math.random()*rect.width;
+            const ry = rect.top + Math.random()*rect.height;
+            setTimeout(()=>spawnParticle(rx,ry), i*60);
+          }
+        } else if(type === 'text'){
+          showMessage(text || 'I LOVE YOU');
+        }
+
+      });
+    });
+
+    // random heart button
+    btnRandom.addEventListener('click', ()=>{
+      showBigHeart();
+      for(let i=0;i<12;i++){
+        const x = window.innerWidth * Math.random();
+        const y = window.innerHeight * (0.3 + Math.random()*0.6);
+        setTimeout(()=>spawnParticle(x,y), i*60);
+      }
+    });
+
+    btnClear.addEventListener('click', ()=>{
+      // remove particles
+      document.querySelectorAll('.particle').forEach(n=>n.remove());
+      preview.classList.remove('show');
+      bigHeart.classList.remove('pop');
+    });
+
+    // bonus: make lines editable by double-click
+    lines.forEach(line=>{
+      line.addEventListener('dblclick', ()=>{
+        const ct = line.querySelector('.code-text');
+        const old = ct.textContent.trim();
+        const newVal = prompt('Chỉnh nội dung (dòng sẽ vẫn hoạt động khi click):', old);
+        if(newVal !== null) ct.textContent = newVal;
+      });
+    });
+  </script>
+</body>
+</html>
+
